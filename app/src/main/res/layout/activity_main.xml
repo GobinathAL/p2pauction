@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:andriod="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    andriod:layout_height="match_parent"
+    andriod:layout_width="match_parent"
+    >
+
+    <Button
+        andriod:id="@+id/btnDiscover"
+        andriod:layout_width="wrap_content"
+        andriod:layout_height="wrap_content"
+        andriod:layout_centerInParent="true"
+        andriod:layout_margin="30dp"
+        andriod:text="Discover"
+        andriod:textSize="20dp"
+        andriod:background="@color/purple_200"/>
+    <ListView
+        andriod:id="@+id/peerList"
+        andriod:layout_width="match_parent"
+        andriod:layout_height="wrap_content"
+        andriod:layout_above="@+id/btnDiscover"
+        andriod:layout_below="@+id/textField">
+    </ListView>
+    <TextView
+        andriod:id="@+id/textField"
+        andriod:layout_width="match_parent"
+        andriod:layout_height="30dp"
+        andriod:text="Discovered Peers"
+        andriod:textSize="20dp"
+        andriod:layout_marginTop="20dp"
+        andriod:textColor="@color/white"
+        andriod:background="@color/purple_500" />
+</RelativeLayout>
