@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".AboutActivity">
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/about_us"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="About Us"
+        android:textStyle="bold"
+        android:textSize="40dp"
+        android:textColor="@color/black"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+    <RelativeLayout
+        android:id="@+id/r1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/about_us"
+        android:layout_margin="20dp">
+        <ImageView
+            android:id="@+id/image1"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:srcCompat="@drawable/male" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/name1"
+            android:text="\nAbdul Malik\n2018103043"
+            android:textSize="30dp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/image1"
+            android:layout_marginLeft="20dp" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/r2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:layout_below="@+id/r1">
+    <ImageView
+        android:id="@+id/image2"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        app:srcCompat="@drawable/female" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/name2"
+        android:text="\nNidya Mayil\n2018103046"
+        android:textSize="30dp"
+        android:textColor="@color/black"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_toRightOf="@+id/image2"
+        android:layout_marginLeft="20dp" />
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@+id/r3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/r2"
+        android:layout_margin="20dp">
+        <ImageView
+            android:id="@+id/image3"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            app:srcCompat="@drawable/male" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/name3"
+            android:text="\nGobinath\n2018103025"
+            android:textSize="30dp"
+            android:textColor="@color/black"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/image3"
+            android:layout_marginLeft="20dp" />
+    </RelativeLayout>
+</RelativeLayout>
