@@ -11,7 +11,7 @@ public class BReceiver extends BroadcastReceiver {
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
     private createActivity activity;
-    WifiP2pConfig config = new WifiP2pConfig();
+    WifiP2pConfig config = new WifiP2pConfig(); 
 
     public BReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, createActivity activity) {
         super();
