@@ -1,30 +1,19 @@
 package com.network.p2pauction;
 
-import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.wifi.p2p.WifiP2pConfig;
-import android.net.wifi.p2p.WifiP2pDevice;
-import android.net.wifi.p2p.WifiP2pDeviceList;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.util.Log;
-import android.widget.ArrayAdapter;
-import android.widget.Toast;
-
-import androidx.core.app.ActivityCompat;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class BReceiver extends BroadcastReceiver {
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
-    private MainActivity activity;
+    private createActivity activity;
     WifiP2pConfig config = new WifiP2pConfig();
 
-    public BReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, MainActivity activity) {
+    public BReceiver(WifiP2pManager manager, WifiP2pManager.Channel channel, createActivity activity) {
         super();
         this.manager = manager;
         this.channel = channel;

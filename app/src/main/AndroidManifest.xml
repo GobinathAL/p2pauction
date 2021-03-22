@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.network.p2pauction">
-    <uses-permission android:required="true" android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:required="true" android:name="android.permission.CHANGE_WIFI_STATE" />
-    <uses-permission android:required="true" android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:required="true" android:name="android.permission.CHANGE_NETWORK_STATE" />
-    <uses-permission android:required="true" android:name="android.permission.INTERNET" />
-    <uses-permission android:required="true" android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <uses-permission
+        android:name="android.permission.ACCESS_WIFI_STATE"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.CHANGE_WIFI_STATE"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.ACCESS_FINE_LOCATION"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.CHANGE_NETWORK_STATE"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.INTERNET"
+        android:required="true" />
+    <uses-permission
+        android:name="android.permission.ACCESS_NETWORK_STATE"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -14,11 +28,20 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.P2pauction">
-        <activity android:name=".MainActivity">
+        <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".JoinActivity" />
+        <activity android:name=".HomeScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".createActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
     </application>

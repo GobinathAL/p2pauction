@@ -1,5 +1,7 @@
 package com.network.p2pauction;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
@@ -8,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
@@ -15,16 +18,18 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.nio.channels.Channel;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements WifiP2pManager.ChannelListener {
+public class createActivity extends AppCompatActivity implements WifiP2pManager.ChannelListener {
     WifiP2pManager manager;
     WifiP2pManager.Channel channel;
     static BroadcastReceiver receiver;
@@ -33,11 +38,18 @@ public class MainActivity extends AppCompatActivity implements WifiP2pManager.Ch
     private boolean retryChannel = false;
     public ListView peerListView;
     List<WifiP2pDevice> peerList = new ArrayList<WifiP2pDevice>();
-    String[] deviceNameArray;
+    ArrayList<String> deviceNameArray;
+    TextView textView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.Theme_P2pauction);
         setContentView(R.layout.activity_main);
+        P2PHandler();
+        P2PInfoReceiver();
+
+    }
+    protected void P2PHandler() {
         manager = (WifiP2pManager) getSystemService(Context.WIFI_P2P_SERVICE);
         channel = manager.initialize(this, getMainLooper(), null);
         receiver = new BReceiver(manager, channel, this);
@@ -47,40 +59,52 @@ public class MainActivity extends AppCompatActivity implements WifiP2pManager.Ch
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_CONNECTION_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
-        deviceNameArray = new String[100];
+        deviceNameArray = new ArrayList<String>();
         btnDiscover = (Button) findViewById(R.id.btnDiscover);
         peerListView = (ListView) findViewById(R.id.peerList);
+        textView = (TextView) findViewById(R.id.textField);
+    }
+    protected void P2PInfoReceiver() {
         btnDiscover.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
                     @Override
                     public void onSuccess() {
+                        textView.setText("Discovered Peers");
                         Toast.makeText(getApplicationContext(), "Peers Discovered",Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
                     public void onFailure(int reasonCode) {
-                        Toast.makeText(getApplicationContext(), "Not discovered" + reasonCode, Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getApplicationContext(), "Cannot be initiated. Give required permissions", Toast.LENGTH_SHORT).show();
                     }
                 });
             }
         });
-
     }
     WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
         @Override
         public void onPeersAvailable(WifiP2pDeviceList peers) {
-            Log.i("CONN", String.format("PeerListListener: %d peers available, updating device list", peers.getDeviceList().size()));
+            Log.i("CONN", String.format("Peers available, updating device list", peers.getDeviceList().size()));
             peerList.clear();
             peerList.addAll(peers.getDeviceList());
-            int index = 0;
+            deviceNameArray.clear();
             for (WifiP2pDevice e : peerList) {
-                Log.i("CONN", e.deviceName + " " + e.deviceAddress);
-                deviceNameArray[index] = e.deviceName;
-                ++index;
+                if(e.deviceName.toLowerCase().contains(getResources().getString(R.string.invalid))) continue;
+                Log.i("CONN",e.toString());
+                deviceNameArray.add(e.deviceName);
             }
-            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, deviceNameArray);
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, deviceNameArray) {
+                @NonNull
+                @Override
+                public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+                    View view = super.getView(position, convertView, parent);
+                    TextView text = (TextView) view.findViewById(android.R.id.text1);
+                    text.setTextColor(Color.parseColor("#000000"));
+                    return view;
+                }
+            };
             peerListView.setAdapter(adapter);
         }
     };
@@ -107,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements WifiP2pManager.Ch
             manager.initialize(this, getMainLooper(), this);
         } else {
             Toast.makeText(this,
-                    "Severe! Channel is probably lost premanently. Try Disable/Re-Enable P2P.",
+                    "Severe! Channel is probably lost permanently. Try Disable/Re-Enable P2P.",
                     Toast.LENGTH_LONG).show();
         }
     }
