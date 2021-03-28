@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".GroupFormation">
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/AuctionName_OwnerSide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="40dp"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true"
+        android:textStyle="bold"
+        android:text="" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/NoOfBidders_OwnerSide"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bidders: 0"
+        android:textSize="20dp"
+        android:layout_below="@+id/AuctionName_OwnerSide" />
+    <ListView
+        android:id="@+id/ItemsList_OwnerSide"
+        android:layout_width="wrap_content"
+        android:layout_height="500dp"
+        android:layout_below="@+id/NoOfBidders_OwnerSide" />
+</RelativeLayout>
