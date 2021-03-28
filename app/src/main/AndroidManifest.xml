@@ -28,7 +28,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.P2pauction">
-        <activity android:name=".AboutActivity"></activity>
+        <activity android:name=".GroupJoin"></activity>
+        <activity android:name=".GroupFormation" />
+        <activity android:name=".AuctionCatalogue" />
+        <activity android:name=".AboutActivity" />
         <activity android:name=".JoinActivity" />
         <activity android:name=".HomeScreen">
             <intent-filter>

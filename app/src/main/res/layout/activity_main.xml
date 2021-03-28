@@ -9,18 +9,30 @@
         andriod:id="@+id/btnDiscover"
         andriod:layout_width="wrap_content"
         andriod:layout_height="wrap_content"
-        andriod:layout_centerInParent="true"
+        andriod:layout_below="@+id/relative1"
+        andriod:layout_centerHorizontal="true"
         andriod:text="Discover"
         andriod:layout_margin="20dp"
         andriod:padding="15dp"/>
-    <ListView
-        andriod:id="@+id/peerList"
-        andriod:layout_width="match_parent"
+    <com.google.android.material.button.MaterialButton
+        andriod:id="@+id/Group"
+        andriod:layout_width="wrap_content"
         andriod:layout_height="wrap_content"
-        andriod:layout_above="@+id/btnDiscover"
-        andriod:layout_below="@+id/textField">
+        andriod:layout_below="@+id/btnDiscover"
+        andriod:layout_centerHorizontal="true"
+        andriod:text="group formation" />
+    <RelativeLayout
+        andriod:id="@+id/relative1"
+        andriod:layout_width="match_parent"
+        andriod:layout_height="400dp"
+        andriod:layout_below="@id/textField">
+        <ListView
+            andriod:id="@+id/peerList"
+            andriod:layout_width="match_parent"
+            andriod:layout_height="wrap_content">
 
-    </ListView>
+        </ListView>
+    </RelativeLayout>
     <TextView
         andriod:id="@+id/textField"
         andriod:layout_width="wrap_content"

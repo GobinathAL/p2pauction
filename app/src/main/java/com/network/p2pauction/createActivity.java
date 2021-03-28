@@ -8,33 +8,44 @@ import androidx.core.app.ActivityCompat;
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pDeviceList;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.nsd.WifiP2pDnsSdServiceInfo;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.material.button.MaterialButton;
+
+import java.net.InetAddress;
 import java.nio.channels.Channel;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class createActivity extends AppCompatActivity implements WifiP2pManager.ChannelListener {
     WifiP2pManager manager;
     WifiP2pManager.Channel channel;
     static BroadcastReceiver receiver;
     IntentFilter intentFilter;
-    Button btnDiscover;
+    Button btnDiscover, groupFormation;
     private boolean retryChannel = false;
     public ListView peerListView;
     List<WifiP2pDevice> peerList = new ArrayList<WifiP2pDevice>();
@@ -47,6 +58,7 @@ public class createActivity extends AppCompatActivity implements WifiP2pManager.
         setContentView(R.layout.activity_main);
         P2PHandler();
         P2PInfoReceiver();
+        service();
 
     }
     protected void P2PHandler() {
@@ -60,7 +72,8 @@ public class createActivity extends AppCompatActivity implements WifiP2pManager.
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
 
         deviceNameArray = new ArrayList<String>();
-        btnDiscover = (Button) findViewById(R.id.btnDiscover);
+        btnDiscover = (MaterialButton) findViewById(R.id.btnDiscover);
+        groupFormation = (MaterialButton) findViewById(R.id.Group);
         peerListView = (ListView) findViewById(R.id.peerList);
         textView = (TextView) findViewById(R.id.textField);
     }
@@ -83,10 +96,19 @@ public class createActivity extends AppCompatActivity implements WifiP2pManager.
             }
         });
     }
+    private void service() {
+        groupFormation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), GroupFormation.class);
+                startActivity(intent);
+            }
+        });
+    }
     WifiP2pManager.PeerListListener peerListListener = new WifiP2pManager.PeerListListener() {
         @Override
         public void onPeersAvailable(WifiP2pDeviceList peers) {
-            Log.i("CONN", String.format("Peers available, updating device list", peers.getDeviceList().size()));
+            Log.i("CONN", "Peers available, updating device list");
             peerList.clear();
             peerList.addAll(peers.getDeviceList());
             deviceNameArray.clear();
@@ -108,6 +130,29 @@ public class createActivity extends AppCompatActivity implements WifiP2pManager.
             peerListView.setAdapter(adapter);
         }
     };
+    WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
+        @Override
+        public void onConnectionInfoAvailable(WifiP2pInfo info) {
+            final InetAddress groupOwnerAddress = info.groupOwnerAddress;
+            Log.i("module2", "Groupinfo " + info.groupFormed + " " + info.isGroupOwner);
+        }
+    };
+    private void startRegistration() {
+        Map record = new HashMap();
+        record.put("name","auction");
+        WifiP2pDnsSdServiceInfo serviceInfo = WifiP2pDnsSdServiceInfo.newInstance("_test", "_presence._tcp", record);
+        manager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+                Log.i("module2", "service added");
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
+    }
     @Override
     protected void onPause() {
         super.onPause();
