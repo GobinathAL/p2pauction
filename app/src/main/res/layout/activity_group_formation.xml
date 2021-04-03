@@ -24,6 +24,55 @@
     <ListView
         android:id="@+id/ItemsList_OwnerSide"
         android:layout_width="wrap_content"
-        android:layout_height="500dp"
-        android:layout_below="@+id/NoOfBidders_OwnerSide" />
+        android:layout_height="300dp"
+        android:layout_below="@+id/NoOfBidders_OwnerSide"/>
+    <RelativeLayout
+        android:id="@+id/ItemDisplay_OwnerSide"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_below="@+id/ItemsList_OwnerSide">
+
+        <ImageView
+            android:id="@+id/ItemIcon_OwnerSide"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_item"
+            android:layout_centerHorizontal="true"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/ItemName_OwnerSide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ItemIcon_OwnerSide"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textColor="@color/black"
+            android:text="Name: " />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/StartingPrice_OwnerSide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ItemName_OwnerSide"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Starting Price: "
+            android:textColor="@color/black" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/HighestBid_OwnerSide"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/StartingPrice_OwnerSide"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Highest Bid: "
+            android:textColor="@color/black" />
+    </RelativeLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/StartButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Start auction"
+        android:layout_below="@+id/ItemDisplay_OwnerSide"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"/>
 </RelativeLayout>

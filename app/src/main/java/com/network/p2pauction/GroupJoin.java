@@ -18,18 +18,24 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textview.MaterialTextView;
 
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -41,10 +47,15 @@ public class GroupJoin extends AppCompatActivity {
     TextView auctionName, noOfBidders;
     ListView itemsList;
     MaterialButton btnSend;
+    MaterialTextView txtName, txtPrice, txtHighest;
+    TextInputEditText txtBidAmount;
     NsdManager.DiscoveryListener discoveryListener;
     NsdManager nsdManager;
     NsdServiceInfo mService;
+    ArrayList<String> itemArrList;
     String ip, myip;
+    RelativeLayout relativeLayout;
+    private int currentItem = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +64,11 @@ public class GroupJoin extends AppCompatActivity {
         noOfBidders = (TextView) findViewById(R.id.NoOfBidders);
         itemsList = (ListView) findViewById(R.id.ItemsList);
         btnSend = (MaterialButton) findViewById(R.id.sendToSocketBtn);
+        relativeLayout = (RelativeLayout) findViewById(R.id.ItemDisplay);
+        txtName = (MaterialTextView) findViewById(R.id.ItemName);
+        txtPrice = (MaterialTextView) findViewById(R.id.StartingPrice);
+        txtHighest = (MaterialTextView) findViewById(R.id.HighestBid);
+        txtBidAmount = (TextInputEditText) findViewById(R.id.BidAmount);
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         myip = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
         Thread myThread = new Thread(new MyServer());
@@ -126,10 +142,26 @@ public class GroupJoin extends AppCompatActivity {
         btnSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                BackgroundTask b = new BackgroundTask();
-                b.execute();
-                Log.i("module2", "background task executed");
-                btnSend.setVisibility(View.GONE);
+                if(btnSend.getText().toString().toLowerCase().contains("join")) {
+                    BackgroundTask b = new BackgroundTask();
+                    b.execute();
+                    Log.i("module2", "background task executed");
+                    btnSend.setVisibility(View.GONE);
+                }
+                else if(btnSend.getText().toString().toLowerCase().contains("bid")) {
+
+                    String bidAmount = txtBidAmount.getText().toString();
+                    Log.i("module4", "bid amound: " + bidAmount);
+                    if(Integer.parseInt(bidAmount) > Integer.parseInt(txtHighest.getText().toString().replace("Highest Bid: ", ""))
+                        && Integer.parseInt(bidAmount) > Integer.parseInt(txtPrice.getText().toString().replace("Starting Price: ", ""))) {
+                        Log.i("module4","calling broadcast");
+                        new BroadcastTask().execute("update " + currentItem + " " + bidAmount);
+                        Log.i("module4", "broadcasted");
+                    }
+                    else {
+                        Toast.makeText(getApplicationContext(), "Enter higher amount", Toast.LENGTH_SHORT).show();
+                    }
+                }
             }
         });
     }
@@ -152,6 +184,27 @@ public class GroupJoin extends AppCompatActivity {
                 s.close();
                 Log.i("module2", "socket closed");
                 Log.i("module2", "message sent to " + ip);
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }
+    class BroadcastTask extends AsyncTask<String, Void, String> {
+        Socket s;
+        DataOutputStream dataOutputStream;
+        @Override
+        protected String doInBackground(String... strings) {
+            try {
+                s = new Socket(ip, 5826);
+                dataOutputStream = new DataOutputStream(s.getOutputStream());
+                dataOutputStream.writeUTF(strings[0]);
+                Log.i("module4", "message written");
+                dataOutputStream.close();
+                s.close();
+
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -185,7 +238,7 @@ public class GroupJoin extends AppCompatActivity {
                                 AUCTION_NAME = auctionArr[0];
                                 auctionName.setText(AUCTION_NAME);
                                 String[] itemArr = auctionArr[1].split(",");
-                                ArrayList<String> itemArrList = new ArrayList<String>(Arrays.asList(itemArr));
+                                itemArrList = new ArrayList<String>(Arrays.asList(itemArr));
                                 ArrayAdapter<String> adapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, itemArrList) {
                                     @NonNull
                                     @Override
@@ -202,6 +255,14 @@ public class GroupJoin extends AppCompatActivity {
                                 String extract = message.substring(12);
                                 noOfBidders.setText("Bidders: " + extract);
                             }
+                            else if(message.contains("start")) {
+                                Thread auctionThread = new Thread(new AuctionServer());
+                                auctionThread.start();
+                                relativeLayout.setVisibility(View.VISIBLE);
+                                btnSend.setText("Bid");
+                                btnSend.setVisibility(View.VISIBLE);
+                                updateItemInfo();
+                            }
                         }
                     });
                 }
@@ -209,6 +270,47 @@ public class GroupJoin extends AppCompatActivity {
                 e.printStackTrace();
             }
         }
+    }
+    class AuctionServer implements Runnable {
+        ServerSocket ss;
+        Socket mySocket;
+        DataInputStream dataInputStream;
+        BufferedReader bufferedReader;
+        Handler handler = new Handler();
+        @Override
+        public void run() {
+            try {
+                ss = new ServerSocket(5826);
+                while(true) {
+                    mySocket = ss.accept();
+                    dataInputStream = new DataInputStream(mySocket.getInputStream());
+                    String message = dataInputStream.readUTF();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            if(message.contains("result")) {
+                                currentItem++;
+                                updateItemInfo();
+                            }
+                            else if(message.contains("update")) {
+                                String[] splitMessage = message.split(" ");
+                                if(currentItem == Integer.parseInt(splitMessage[1])) {
+                                    txtHighest.setText("Highest Bid: " + splitMessage[2]);
+                                }
+                            }
+                        }
+                    });
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+    private void updateItemInfo() {
+        String[] itemInfo = itemArrList.get(currentItem).split(" ");
+        txtName.setText("Name: " + itemInfo[0]);
+        txtPrice.setText("Starting Price: " + itemInfo[1]);
+        txtHighest.setText("Highest Bid: " + "0");
     }
     @Override
     protected void onDestroy() {

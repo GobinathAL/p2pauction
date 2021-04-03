@@ -4,6 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:focusableInTouchMode="true"
+    android:focusable="true"
     tools:context=".GroupJoin">
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/AuctionName"
@@ -24,13 +26,68 @@
     <ListView
         android:id="@+id/ItemsList"
         android:layout_width="match_parent"
-        android:layout_height="500dp"
+        android:layout_height="300dp"
         android:layout_below="@+id/NoOfBidders" />
+    <RelativeLayout
+        android:id="@+id/ItemDisplay"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_below="@+id/ItemsList">
+
+        <ImageView
+            android:id="@+id/ItemIcon"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_item"
+            android:layout_centerHorizontal="true"/>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/ItemName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ItemIcon"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:textColor="@color/black"
+            android:text="Name: " />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/StartingPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ItemName"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Starting Price: "
+            android:textColor="@color/black" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/HighestBid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/StartingPrice"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="10dp"
+            android:text="Highest Bid: "
+            android:textColor="@color/black" />
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/ItemIcon"
+            android:layout_alignParentRight="true"
+            android:gravity="right"
+            android:layout_margin="20dp">
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/BidAmount"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:inputType="number"/>
+        </com.google.android.material.textfield.TextInputLayout>
+    </RelativeLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/sendToSocketBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/ItemsList"
+        android:layout_below="@+id/ItemDisplay"
+        android:layout_marginTop="20dp"
         android:text="Join"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
