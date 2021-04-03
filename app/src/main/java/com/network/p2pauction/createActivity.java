@@ -137,22 +137,6 @@ public class createActivity extends AppCompatActivity implements WifiP2pManager.
             Log.i("module2", "Groupinfo " + info.groupFormed + " " + info.isGroupOwner);
         }
     };
-    private void startRegistration() {
-        Map record = new HashMap();
-        record.put("name","auction");
-        WifiP2pDnsSdServiceInfo serviceInfo = WifiP2pDnsSdServiceInfo.newInstance("_test", "_presence._tcp", record);
-        manager.addLocalService(channel, serviceInfo, new WifiP2pManager.ActionListener() {
-            @Override
-            public void onSuccess() {
-                Log.i("module2", "service added");
-            }
-
-            @Override
-            public void onFailure(int reason) {
-
-            }
-        });
-    }
     @Override
     protected void onPause() {
         super.onPause();

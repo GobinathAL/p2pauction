@@ -172,9 +172,11 @@ public class GroupFormation extends AppCompatActivity {
             if(command.contains("config")) {
                 try {
                     s = new Socket(command.substring(7), 5825);
+                    Log.i("module2", "socket established " + command.substring(7));
                     dataOutputStream = new DataOutputStream(s.getOutputStream());
                     dataOutputStream.writeUTF("config:" + AuctionCatalogue.AUCTION_NAME + "@" + AuctionCatalogue.AUCTION_CATALOGUE + "@" + AuctionCatalogue.AUCTION_DURATION);
                     dataOutputStream.close();
+                    Log.i("module2", command + "written to socket");
                     s.close();
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
@@ -186,9 +188,11 @@ public class GroupFormation extends AppCompatActivity {
                 for(String sendip : clientIpAddress) {
                     try {
                         Socket s = new Socket(sendip, 5825);
+                        Log.i("module2", "socket established " + command + "to " + sendip);
                         dataOutputStream = new DataOutputStream(s.getOutputStream());
                         dataOutputStream.writeUTF(command);
                         dataOutputStream.close();
+                        Log.i("module2", command + " written");
                         s.close();
                     } catch (UnknownHostException e) {
                         e.printStackTrace();

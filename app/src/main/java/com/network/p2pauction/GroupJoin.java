@@ -43,7 +43,6 @@ public class GroupJoin extends AppCompatActivity {
     MaterialButton btnSend;
     NsdManager.DiscoveryListener discoveryListener;
     NsdManager nsdManager;
-    NsdManager.ResolveListener resolveListener;
     NsdServiceInfo mService;
     String ip, myip;
     @Override
@@ -89,11 +88,27 @@ public class GroupJoin extends AppCompatActivity {
                 if(!serviceInfo.getServiceType().equals("_p2pauction._tcp.")) {
                     Log.i("module2", "nsd unknown service type");
                 }
-                else if(serviceInfo.getServiceName().contains("p2pauction192")) {
+                else if(serviceInfo.getServiceName().contains("p2pauction")) {
                     Log.i("module2", "nsd service name: " + serviceInfo.getServiceName());
                     ip = serviceInfo.getServiceName().substring(10);
                     Log.i("module2", "ip found - " + ip);
-                    nsdManager.resolveService(serviceInfo, resolveListener);
+                    nsdManager.resolveService(serviceInfo, new NsdManager.ResolveListener() {
+                        @Override
+                        public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
+                            Log.i("module2", "nsd service resolve failed");
+                        }
+
+                        @Override
+                        public void onServiceResolved(NsdServiceInfo serviceInfo) {
+                            Log.i("module2", "nsd service resolved");
+                            if(serviceInfo.getServiceName().contains("p2pauction192")) {
+                                Log.i("module2", "Expected service");
+                                mService = serviceInfo;
+                                int port = mService.getPort();
+                                Log.i("module2", "" + port);
+                            }
+                        }
+                    });
                 }
             }
 
@@ -103,23 +118,7 @@ public class GroupJoin extends AppCompatActivity {
             }
         };
         Log.i("module2","check2");
-        resolveListener = new NsdManager.ResolveListener() {
-            @Override
-            public void onResolveFailed(NsdServiceInfo serviceInfo, int errorCode) {
-                Log.i("module2", "nsd service resolve failed");
-            }
 
-            @Override
-            public void onServiceResolved(NsdServiceInfo serviceInfo) {
-                Log.i("module2", "nsd service resolved");
-                if(serviceInfo.getServiceName().contains("p2pauction192")) {
-                    Log.i("module2", "Expected service");
-                    mService = serviceInfo;
-                    int port = mService.getPort();
-                    Log.i("module2", "" + port);
-                }
-            }
-        };
         Log.i("module2","check3");
         nsdManager.discoverServices("_p2pauction._tcp", NsdManager.PROTOCOL_DNS_SD, discoveryListener);
         Log.i("module2","check4");
@@ -176,6 +175,7 @@ public class GroupJoin extends AppCompatActivity {
                     mySocket = ss.accept();
                     dataInputStream = new DataInputStream(mySocket.getInputStream());
                     String message = dataInputStream.readUTF();
+                    Log.i("module2", "data read " + message);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
