@@ -8,13 +8,11 @@
 
     <ImageView
         android:id="@+id/hammer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@mipmap/hammer_foreground"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/ic_hammer_icon"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"
-        tools:layout_editor_absoluteX="133dp"
-        tools:layout_editor_absoluteY="79dp" />
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:id="@+id/appName"

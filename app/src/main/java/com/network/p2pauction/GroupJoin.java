@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.android.material.textview.MaterialTextView;
 
 import java.io.BufferedReader;
@@ -48,6 +49,7 @@ public class GroupJoin extends AppCompatActivity {
     ListView itemsList;
     MaterialButton btnSend;
     MaterialTextView txtName, txtPrice, txtHighest;
+    TextInputLayout textInputLayout;
     TextInputEditText txtBidAmount;
     NsdManager.DiscoveryListener discoveryListener;
     NsdManager nsdManager;
@@ -69,6 +71,7 @@ public class GroupJoin extends AppCompatActivity {
         txtPrice = (MaterialTextView) findViewById(R.id.StartingPrice);
         txtHighest = (MaterialTextView) findViewById(R.id.HighestBid);
         txtBidAmount = (TextInputEditText) findViewById(R.id.BidAmount);
+        textInputLayout = (TextInputLayout) findViewById(R.id.inputLayout);
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         myip = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
         Thread myThread = new Thread(new MyServer());
@@ -258,6 +261,7 @@ public class GroupJoin extends AppCompatActivity {
                             else if(message.contains("start")) {
                                 Thread auctionThread = new Thread(new AuctionServer());
                                 auctionThread.start();
+                                itemsList.setVisibility(View.GONE);
                                 relativeLayout.setVisibility(View.VISIBLE);
                                 btnSend.setText("Bid");
                                 btnSend.setVisibility(View.VISIBLE);
@@ -297,6 +301,11 @@ public class GroupJoin extends AppCompatActivity {
                                 if(currentItem == Integer.parseInt(splitMessage[1])) {
                                     txtHighest.setText("Highest Bid: " + splitMessage[2]);
                                 }
+                            }
+                            else if(message.contains("finish")) {
+                                btnSend.setVisibility(View.GONE);
+                                txtBidAmount.setVisibility(View.GONE);
+                                textInputLayout.setVisibility(View.GONE);
                             }
                         }
                     });

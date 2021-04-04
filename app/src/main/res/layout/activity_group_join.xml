@@ -69,15 +69,16 @@
             android:text="Highest Bid: "
             android:textColor="@color/black" />
         <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/inputLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toRightOf="@+id/ItemIcon"
-            android:layout_alignParentRight="true"
-            android:gravity="right"
+            android:layout_below="@+id/HighestBid"
+            android:layout_centerHorizontal="true"
+            android:hint="Enter amount"
             android:layout_margin="20dp">
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/BidAmount"
-                android:layout_width="100dp"
+                android:layout_width="150dp"
                 android:layout_height="wrap_content"
                 android:inputType="number"/>
         </com.google.android.material.textfield.TextInputLayout>

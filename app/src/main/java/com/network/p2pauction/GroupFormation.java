@@ -66,6 +66,7 @@ public class GroupFormation extends AppCompatActivity {
     RelativeLayout relativeLayout;
     ArrayList<String> itemArrList;
     private int currentItem = 0;
+    boolean auctionThreadFlag = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,8 +115,10 @@ public class GroupFormation extends AppCompatActivity {
                     auctionThread.start();
                     Log.i("module4", "calling start");
                     new BackgroundTask().execute("start");
+                    itemsList.setVisibility(View.GONE);
                     startButton.setText("Next");
                     Log.i("module4", "Button text changed");
+                    updateItemInfo();
                 }
                 else if(startButton.getText().equals("Next")){
                     announceResult();
@@ -123,8 +126,13 @@ public class GroupFormation extends AppCompatActivity {
                     if(currentItem == itemArrList.size() - 1) {
                         startButton.setText("Finish");
                     }
+                    updateItemInfo();
                 }
-                updateItemInfo();
+                else if(startButton.getText().equals("Finish")) {
+                    Toast.makeText(getApplicationContext(), "Auction ended", Toast.LENGTH_SHORT).show();
+                    auctionThreadFlag = false;
+                    new BroadcastTask().execute("finish");
+                }
             }
         });
     }
@@ -176,12 +184,6 @@ public class GroupFormation extends AppCompatActivity {
         public void run() {
             try {
                 ss = new ServerSocket(5825);
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplicationContext(), "Waiting for client", Toast.LENGTH_SHORT).show();
-                    }
-                });
                 while(true) {
                     mySocket = ss.accept();
                     dataInputStream = new DataInputStream(mySocket.getInputStream());
@@ -189,7 +191,6 @@ public class GroupFormation extends AppCompatActivity {
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
-                            Toast.makeText(getApplicationContext(), "Message Received: " + message, Toast.LENGTH_SHORT).show();
                             if(!clientIpAddress.contains(message))
                                 clientIpAddress.add(message);
                             noOfBidders.setText("Bidders: " + clientIpAddress.size());
@@ -258,7 +259,7 @@ public class GroupFormation extends AppCompatActivity {
         public void run() {
             try {
                 ss = new ServerSocket(5826);
-                while (true) {
+                while (auctionThreadFlag) {
                     mySocket = ss.accept();
                     dataInputStream = new DataInputStream(mySocket.getInputStream());
                     message = dataInputStream.readUTF();
@@ -281,7 +282,7 @@ public class GroupFormation extends AppCompatActivity {
         String message;
         @Override
         protected String doInBackground(String... strings) {
-            if(strings.length == 1 && strings[0].contains("result")) {
+            if(strings.length == 1 && (strings[0].contains("result") || strings[0].contains("finish")) ) {
                 for(String sendip : clientIpAddress) {
                     try {
                         Socket s = new Socket(sendip, 5826);
@@ -296,7 +297,7 @@ public class GroupFormation extends AppCompatActivity {
                     }
                 }
             }
-            else if(strings[0].contains("update")) {
+            else if(strings[0].contains("update") && auctionThreadFlag) {
                 String[] splitString = strings[0].split(" ");
                 Log.i("module4", "splitted the received msg");
                 if(currentItem == Integer.parseInt(splitString[1])) {
