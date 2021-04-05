@@ -204,7 +204,7 @@ public class GroupJoin extends AppCompatActivity {
                 s = new Socket(ip, 5826);
                 dataOutputStream = new DataOutputStream(s.getOutputStream());
                 dataOutputStream.writeUTF(strings[0]);
-                Log.i("module4", "message written");
+                Log.i("module4", "message: " + strings[0] + " status: sent");
                 dataOutputStream.close();
                 s.close();
 
@@ -297,6 +297,7 @@ public class GroupJoin extends AppCompatActivity {
                                 updateItemInfo();
                             }
                             else if(message.contains("update")) {
+                                Log.i("module4", "message: " + message + "status: received");
                                 String[] splitMessage = message.split(" ");
                                 if(currentItem == Integer.parseInt(splitMessage[1])) {
                                     txtHighest.setText("Highest Bid: " + splitMessage[2]);

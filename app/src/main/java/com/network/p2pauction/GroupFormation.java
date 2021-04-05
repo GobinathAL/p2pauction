@@ -263,7 +263,6 @@ public class GroupFormation extends AppCompatActivity {
                     mySocket = ss.accept();
                     dataInputStream = new DataInputStream(mySocket.getInputStream());
                     message = dataInputStream.readUTF();
-                    Log.i("module4", "received " + message);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -299,9 +298,7 @@ public class GroupFormation extends AppCompatActivity {
             }
             else if(strings[0].contains("update") && auctionThreadFlag) {
                 String[] splitString = strings[0].split(" ");
-                Log.i("module4", "splitted the received msg");
                 if(currentItem == Integer.parseInt(splitString[1])) {
-                    Log.i("module4", "updating txtHighest with " + splitString[2]);
                     new Handler(getMainLooper()).post(new Runnable() {
                         @Override
                         public void run() {
