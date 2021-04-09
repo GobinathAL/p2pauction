@@ -66,6 +66,14 @@
             android:layout_margin="10dp"
             android:text="Highest Bid: "
             android:textColor="@color/black" />
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/Leaderboard"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="LeaderBoard: "
+            android:textColor="@color/black"
+            android:layout_below="@+id/HighestBid_OwnerSide"
+            android:layout_margin="10dp" />
     </RelativeLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/StartButton"
@@ -75,4 +83,35 @@
         android:layout_below="@+id/ItemDisplay_OwnerSide"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="20dp"/>
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/ActiveBiddersText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Active Bidders"
+        android:textColor="@color/black"
+        android:layout_below="@+id/StartButton" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/ActiveBidders"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ActiveBiddersText"
+        android:textColor="@color/black" />
+    <ListView
+        android:id="@+id/log"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:divider="@null"
+        android:dividerHeight="0dp"
+        android:layout_below="@+id/ActiveBidders"
+        android:layout_above="@+id/Switch"
+        android:foregroundGravity="bottom"/>
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/Switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Selective Flooding"
+        android:layout_margin="20dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true" />
 </RelativeLayout>

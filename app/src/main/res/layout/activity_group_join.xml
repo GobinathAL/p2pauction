@@ -72,7 +72,7 @@
             android:id="@+id/inputLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/HighestBid"
+            android:layout_below="@+id/LeaderboardPosition"
             android:layout_centerHorizontal="true"
             android:hint="Enter amount"
             android:layout_margin="20dp">
@@ -82,6 +82,15 @@
                 android:layout_height="wrap_content"
                 android:inputType="number"/>
         </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/LeaderboardPosition"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/HighestBid"
+            android:layout_centerHorizontal="true"
+            android:text="Your Leaderboard Position: "
+            android:textColor="@color/black"
+            android:layout_margin="10dp" />
     </RelativeLayout>
     <com.google.android.material.button.MaterialButton
         android:id="@+id/sendToSocketBtn"

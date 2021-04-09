@@ -48,7 +48,7 @@ public class GroupJoin extends AppCompatActivity {
     TextView auctionName, noOfBidders;
     ListView itemsList;
     MaterialButton btnSend;
-    MaterialTextView txtName, txtPrice, txtHighest;
+    MaterialTextView txtName, txtPrice, txtHighest, txtLeaderboardPosition;
     TextInputLayout textInputLayout;
     TextInputEditText txtBidAmount;
     NsdManager.DiscoveryListener discoveryListener;
@@ -72,6 +72,7 @@ public class GroupJoin extends AppCompatActivity {
         txtHighest = (MaterialTextView) findViewById(R.id.HighestBid);
         txtBidAmount = (TextInputEditText) findViewById(R.id.BidAmount);
         textInputLayout = (TextInputLayout) findViewById(R.id.inputLayout);
+        txtLeaderboardPosition = (MaterialTextView) findViewById(R.id.LeaderboardPosition);
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         myip = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
         Thread myThread = new Thread(new MyServer());
@@ -158,7 +159,7 @@ public class GroupJoin extends AppCompatActivity {
                     if(Integer.parseInt(bidAmount) > Integer.parseInt(txtHighest.getText().toString().replace("Highest Bid: ", ""))
                         && Integer.parseInt(bidAmount) > Integer.parseInt(txtPrice.getText().toString().replace("Starting Price: ", ""))) {
                         Log.i("module4","calling broadcast");
-                        new BroadcastTask().execute("update " + currentItem + " " + bidAmount);
+                        new BroadcastTask().execute("update " + currentItem + " " + bidAmount + "#" + myip);
                         Log.i("module4", "broadcasted");
                     }
                     else {
@@ -303,6 +304,14 @@ public class GroupJoin extends AppCompatActivity {
                                     txtHighest.setText("Highest Bid: " + splitMessage[2]);
                                 }
                             }
+                            else if(message.contains("position") && message.contains(myip)) {
+                                String[] splitMessage = message.split(" ");
+                                txtLeaderboardPosition.setText("Your Leaderboard Position: " + splitMessage[1]);
+                            }
+                            else if(message.contains("leaderboard")) {
+                                String[] splitMessage = message.split(" ");
+                                txtLeaderboardPosition.setText("Your Leaderboard Position: " + splitMessage[1]);
+                            }
                             else if(message.contains("finish")) {
                                 btnSend.setVisibility(View.GONE);
                                 txtBidAmount.setVisibility(View.GONE);
@@ -321,6 +330,7 @@ public class GroupJoin extends AppCompatActivity {
         txtName.setText("Name: " + itemInfo[0]);
         txtPrice.setText("Starting Price: " + itemInfo[1]);
         txtHighest.setText("Highest Bid: " + "0");
+        txtLeaderboardPosition.setText("Leaderboard Position: ");
     }
     @Override
     protected void onDestroy() {
