@@ -72,7 +72,7 @@ import java.util.List;
     ArrayList<String> clientIpAddress;
     ArrayList<Double> bidderFreq = new ArrayList<Double>();
     NsdManager nsdManager;
-    MaterialTextView txtName, txtPrice, txtHighest, txtLeaderboard;
+    MaterialTextView txtName, txtPrice, txtHighest, txtLeaderboard, txtActiveBidders;
     SwitchMaterial toggle;
     RelativeLayout relativeLayout;
     ArrayList<String> itemArrList, logArrList, playerBidHistory, bidderLeaderboard, activeBidders = new ArrayList<String>(), prev = new ArrayList<String>();
@@ -88,18 +88,19 @@ import java.util.List;
         auctionName.setText(AuctionCatalogue.AUCTION_NAME);
         noOfBidders = (TextView) findViewById(R.id.NoOfBidders_OwnerSide);
         itemsList = (ListView) findViewById(R.id.ItemsList_OwnerSide);
-        log = (ListView) findViewById(R.id.log);
-        String[] strlist = "Log,...".split(",");
-        logArrList = new ArrayList<String>(Arrays.asList(strlist));
-        logAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, logArrList);
-        Log.i("module5", "success");
-        log.setAdapter(logAdapter);
+        //log = (ListView) findViewById(R.id.log);
+//        String[] strlist = "Log,...".split(",");
+//        logArrList = new ArrayList<String>(Arrays.asList(strlist));
+//        logAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, logArrList);
+//        Log.i("module5", "success");
+//        log.setAdapter(logAdapter);
         startButton = (MaterialButton) findViewById(R.id.StartButton);
         relativeLayout = (RelativeLayout) findViewById(R.id.ItemDisplay_OwnerSide);
         txtName = (MaterialTextView) findViewById(R.id.ItemName_OwnerSide);
         txtPrice = (MaterialTextView) findViewById(R.id.StartingPrice_OwnerSide);
         txtHighest = (MaterialTextView) findViewById(R.id.HighestBid_OwnerSide);
         txtLeaderboard = (MaterialTextView) findViewById(R.id.Leaderboard);
+        txtActiveBidders = (MaterialTextView) findViewById(R.id.ActiveBidders);
         toggle = (SwitchMaterial) findViewById(R.id.Switch);
         toggle.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -377,14 +378,14 @@ import java.util.List;
                         dataOutputStream = new DataOutputStream(s.getOutputStream());
                         dataOutputStream.writeUTF("position " + pos + " " + sendip);
                         Log.i("module5", "Broadcasting \"" + "position " + pos + " " + sendip + "\" to all peers");
-                        logArrList.add("Broadcasting \"" + "position " + pos + " " + sendip + "\" to all peers");
-                        new Handler(getMainLooper()).post(new Runnable() {
-                            @Override
-                            public void run() {
-
-                                logAdapter.notifyDataSetChanged();
-                            }
-                        });
+                      //  logArrList.add("Broadcasting \"" + "position " + pos + " " + sendip + "\" to all peers");
+//                        new Handler(getMainLooper()).post(new Runnable() {
+//                            @Override
+//                            public void run() {
+//
+//                                logAdapter.notifyDataSetChanged();
+//                            }
+//                        });
                         dataOutputStream.close();
                         s.close();
                     } catch (UnknownHostException e) {
@@ -403,8 +404,9 @@ import java.util.List;
                         try {
                             Socket s = new Socket(sendip, 5826);
                             dataOutputStream = new DataOutputStream(s.getOutputStream());
-                            dataOutputStream.writeUTF("leaderboard " + pos + " ");
-                            logArrList.add("Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
+                            dataOutputStream.writeUTF("leaderboard " + pos);
+                           // logArrList.add("Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
+                            Log.i("module5", "Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
                             dataOutputStream.close();
                             s.close();
                         } catch (UnknownHostException e) {
@@ -424,7 +426,8 @@ import java.util.List;
                                 if(prev.contains(sendip) && prev.indexOf(sendip) == pos) continue;
                                 Socket s = new Socket(sendip, 5826);
                                 dataOutputStream = new DataOutputStream(s.getOutputStream());
-                                dataOutputStream.writeUTF("leaderboard" + bidderLeaderboard.indexOf(sendip));
+                                dataOutputStream.writeUTF("leaderboard " + bidderLeaderboard.indexOf(sendip));
+                                Log.i("module5", "sending to " + sendip);
                                 dataOutputStream.close();
                                 s.close();
                             } catch (UnknownHostException e) {
@@ -472,8 +475,18 @@ import java.util.List;
         bidderFreq.clear();
         for(int i = 0; i < clientIpAddress.size(); i++) {
             int count = Collections.frequency(playerBidHistory, clientIpAddress.get(i));
-            bidderFreq.add(count / playerBidHistory.size() * 100.0);
+            Log.i("module5", "count " + count + "size " + playerBidHistory.size() + ((double)count / (double)playerBidHistory.size() * 100.0));
+            bidderFreq.add(((double)count / (double)playerBidHistory.size()) * 100.0);
         }
+        Log.i("module5", "bid freq " + bidderFreq.toString());
+        activeBidders.clear();
+        for(int i = 0; i < bidderFreq.size(); i++) {
+            if(bidderFreq.get(i) > 25.0) {
+                activeBidders.add(clientIpAddress.get(i));
+            }
+        }
+        Log.i("module5", "active bidders" + activeBidders.toString());
+        txtActiveBidders.setText(activeBidders.toString());
     }
     @Override
     protected void onDestroy() {

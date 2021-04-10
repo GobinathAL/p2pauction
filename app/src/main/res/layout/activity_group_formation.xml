@@ -97,6 +97,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/ActiveBiddersText"
         android:textColor="@color/black" />
+   <!--
     <ListView
         android:id="@+id/log"
         android:layout_width="match_parent"
@@ -105,7 +106,7 @@
         android:dividerHeight="0dp"
         android:layout_below="@+id/ActiveBidders"
         android:layout_above="@+id/Switch"
-        android:foregroundGravity="bottom"/>
+        android:foregroundGravity="bottom"/> !-->
     <com.google.android.material.switchmaterial.SwitchMaterial
         android:id="@+id/Switch"
         android:layout_width="wrap_content"
