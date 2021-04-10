@@ -152,6 +152,7 @@ import java.util.List;
                 else if(startButton.getText().equals("Next")){
                     bidderLeaderboard.clear();
                     playerBidHistory.clear();
+                    activeBidders.clear();
                     announceResult();
                     currentItem++;
                     if(currentItem == itemArrList.size() - 1) {
@@ -407,10 +408,10 @@ import java.util.List;
                                 int pos = bidderLeaderboard.size() + 1;
                                 if(bidderLeaderboard.contains(sendip))
                                     pos = bidderLeaderboard.indexOf(sendip) + 1;
-                                if(prev.contains(sendip) && prev.indexOf(sendip) == pos) continue;
+                                if(prev.contains(sendip) && prev.indexOf(sendip) == (pos - 1)) continue;
                                 Socket s = new Socket(sendip, 5826);
                                 dataOutputStream = new DataOutputStream(s.getOutputStream());
-                                dataOutputStream.writeUTF("leaderboard " + bidderLeaderboard.indexOf(sendip));
+                                dataOutputStream.writeUTF("leaderboard " + (bidderLeaderboard.indexOf(sendip) + 1));
                                 Log.i("flooding", "sending " + "\"leaderboard " + pos + "\" to " + sendip);
                                 dataOutputStream.close();
                                 s.close();
@@ -438,6 +439,7 @@ import java.util.List;
         txtLeaderboard.setText("Leaderboard: ");
     }
     private void updateLeaderboard() {
+        prev.clear();
         prev = (ArrayList<String>) bidderLeaderboard.clone();
         bidderLeaderboard.clear();
         Log.i("module5", "leaderboard cleared");
