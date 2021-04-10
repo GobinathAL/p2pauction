@@ -78,7 +78,6 @@ import java.util.List;
     ArrayList<String> itemArrList, logArrList, playerBidHistory, bidderLeaderboard, activeBidders = new ArrayList<String>(), prev = new ArrayList<String>();
     private int currentItem = 0;
     boolean auctionThreadFlag = true;
-    ArrayAdapter<String> logAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,12 +87,6 @@ import java.util.List;
         auctionName.setText(AuctionCatalogue.AUCTION_NAME);
         noOfBidders = (TextView) findViewById(R.id.NoOfBidders_OwnerSide);
         itemsList = (ListView) findViewById(R.id.ItemsList_OwnerSide);
-        //log = (ListView) findViewById(R.id.log);
-//        String[] strlist = "Log,...".split(",");
-//        logArrList = new ArrayList<String>(Arrays.asList(strlist));
-//        logAdapter = new ArrayAdapter<String>(getApplicationContext(), android.R.layout.simple_list_item_1, logArrList);
-//        Log.i("module5", "success");
-//        log.setAdapter(logAdapter);
         startButton = (MaterialButton) findViewById(R.id.StartButton);
         relativeLayout = (RelativeLayout) findViewById(R.id.ItemDisplay_OwnerSide);
         txtName = (MaterialTextView) findViewById(R.id.ItemName_OwnerSide);
@@ -377,15 +370,7 @@ import java.util.List;
                         Socket s = new Socket(sendip, 5826);
                         dataOutputStream = new DataOutputStream(s.getOutputStream());
                         dataOutputStream.writeUTF("position " + pos + " " + sendip);
-                        Log.i("module5", "Broadcasting \"" + "position " + pos + " " + sendip + "\" to all peers");
-                      //  logArrList.add("Broadcasting \"" + "position " + pos + " " + sendip + "\" to all peers");
-//                        new Handler(getMainLooper()).post(new Runnable() {
-//                            @Override
-//                            public void run() {
-//
-//                                logAdapter.notifyDataSetChanged();
-//                            }
-//                        });
+                        Log.i("flooding", "Broadcasting \"" + "position " + pos + " " + sendip + "\" to all peers");
                         dataOutputStream.close();
                         s.close();
                     } catch (UnknownHostException e) {
@@ -405,8 +390,7 @@ import java.util.List;
                             Socket s = new Socket(sendip, 5826);
                             dataOutputStream = new DataOutputStream(s.getOutputStream());
                             dataOutputStream.writeUTF("leaderboard " + pos);
-                           // logArrList.add("Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
-                            Log.i("module5", "Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
+                            Log.i("flooding", "Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
                             dataOutputStream.close();
                             s.close();
                         } catch (UnknownHostException e) {
@@ -427,7 +411,7 @@ import java.util.List;
                                 Socket s = new Socket(sendip, 5826);
                                 dataOutputStream = new DataOutputStream(s.getOutputStream());
                                 dataOutputStream.writeUTF("leaderboard " + bidderLeaderboard.indexOf(sendip));
-                                Log.i("module5", "sending to " + sendip);
+                                Log.i("flooding", "sending " + "\"leaderboard " + pos + "\" to " + sendip);
                                 dataOutputStream.close();
                                 s.close();
                             } catch (UnknownHostException e) {
