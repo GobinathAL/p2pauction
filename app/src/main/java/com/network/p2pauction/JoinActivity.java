@@ -1,7 +1,5 @@
 package com.network.p2pauction;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;

@@ -100,4 +100,14 @@
         android:layout_marginTop="20dp"
         android:text="Join"
         android:layout_centerHorizontal="true" />
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/result"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/sendToSocketBtn"
+        android:text=""
+        android:textSize="30dp"
+        android:textStyle="bold"
+        android:layout_marginTop="20dp"
+        android:layout_centerHorizontal="true" />
 </RelativeLayout>

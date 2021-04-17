@@ -1,9 +1,5 @@
 package com.network.p2pauction;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Context;
 import android.graphics.Color;
 import android.net.nsd.NsdManager;
@@ -12,6 +8,7 @@ import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
+import android.text.LoginFilter;
 import android.text.format.Formatter;
 import android.util.Log;
 import android.view.View;
@@ -22,6 +19,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -31,15 +32,13 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Timer;
+import java.util.concurrent.TimeUnit;
 
 public class GroupJoin extends AppCompatActivity {
     String AUCTION_NAME;
@@ -57,6 +56,7 @@ public class GroupJoin extends AppCompatActivity {
     ArrayList<String> itemArrList;
     String ip, myip;
     RelativeLayout relativeLayout;
+    MaterialTextView txtResult;
     private int currentItem = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +73,7 @@ public class GroupJoin extends AppCompatActivity {
         txtBidAmount = (TextInputEditText) findViewById(R.id.BidAmount);
         textInputLayout = (TextInputLayout) findViewById(R.id.inputLayout);
         txtLeaderboardPosition = (MaterialTextView) findViewById(R.id.LeaderboardPosition);
+        txtResult = (MaterialTextView) findViewById(R.id.result);
         WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
         myip = Formatter.formatIpAddress(wifiManager.getConnectionInfo().getIpAddress());
         Thread myThread = new Thread(new MyServer());
@@ -294,8 +295,22 @@ public class GroupJoin extends AppCompatActivity {
                         @Override
                         public void run() {
                             if(message.contains("result")) {
-                                currentItem++;
-                                updateItemInfo();
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        currentItem++;
+                                        txtResult.setText("");
+                                        Log.i("module6", "gone");
+                                        updateItemInfo();
+                                    }
+                                }, 5000);
+
+                                if(txtLeaderboardPosition.getText().toString().equals("Your Leaderboard Position: 1")) {
+                                    txtResult.setText("You won this bid");
+                                    Log.i("module6", "winner");
+                                } else {
+                                    Log.i("module6", "not a winner");
+                                }
                             }
                             else if(message.contains("update")) {
                                 Log.i("module4", "message: " + message + "status: received");
@@ -316,6 +331,8 @@ public class GroupJoin extends AppCompatActivity {
                                 btnSend.setVisibility(View.GONE);
                                 txtBidAmount.setVisibility(View.GONE);
                                 textInputLayout.setVisibility(View.GONE);
+                                if(txtLeaderboardPosition.getText().toString().equals("Your Leaderboard Position: 1"))
+                                    txtResult.setText("You won this bid");
                             }
                         }
                     });
