@@ -61,6 +61,8 @@ public class GroupFormation extends AppCompatActivity {
     ArrayList<String> itemArrList, logArrList, playerBidHistory, bidderLeaderboard, activeBidders = new ArrayList<String>(), prev = new ArrayList<String>();
     private int currentItem = 0;
     boolean auctionThreadFlag = true;
+    private NetworkTimerSF timerSF = new NetworkTimerSF();
+    private NetworkTimerWOSF timerWOSF = new NetworkTimerWOSF();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -248,6 +250,10 @@ public class GroupFormation extends AppCompatActivity {
                 }
             }
             else if(command.contains("noOfBidders") || command.contains("start")) {
+                if(command.contains("start")) {
+                    timerSF.startTimer();
+                    timerWOSF.startTimer();
+                }
                 for(String sendip : clientIpAddress) {
                     try {
                         Socket s = new Socket(sendip, 5825);
@@ -303,7 +309,13 @@ public class GroupFormation extends AppCompatActivity {
         String message;
         @Override
         protected String doInBackground(String... strings) {
+            String command = strings[0];
             if(strings.length == 1 && (strings[0].contains("result") || strings[0].contains("finish")) ) {
+
+                if(strings[0].contains("finish")) {
+                    Log.i("module6", "Delay without SF " + timerWOSF.getDelay());
+                    Log.i("module6", "Delay with SF " + timerSF.getDelay());
+                }
                 for(String sendip : clientIpAddress) {
                     try {
                         Socket s = new Socket(sendip, 5826);
@@ -316,6 +328,14 @@ public class GroupFormation extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
+                }
+                if(selectiveFloodingToggle.contains("position")) {
+                    timerWOSF.waitForAck();
+                    timerWOSF.updateDelayOnAckReceived(command);
+                }
+                if(selectiveFloodingToggle.contains("leaderboard")) {
+                    timerSF.waitForAck();
+                    timerSF.updateDelayOnAckReceived(command);
                 }
             }
             else if(strings[0].contains("update") && auctionThreadFlag) {
@@ -348,7 +368,16 @@ public class GroupFormation extends AppCompatActivity {
                             e.printStackTrace();
                         }
                     }
+                    if(selectiveFloodingToggle.contains("position")) {
+                        timerWOSF.waitForAck();
+                        timerWOSF.updateDelayOnAckReceived(command);
+                    }
+                    if(selectiveFloodingToggle.contains("leaderboard")) {
+                        timerSF.waitForAck();
+                        timerSF.updateDelayOnAckReceived(command);
+                    }
                 }
+
             }
             else if(strings[0].contains("position") && auctionThreadFlag) {
                 for(String sendip : clientIpAddress) {
@@ -368,6 +397,8 @@ public class GroupFormation extends AppCompatActivity {
                         e.printStackTrace();
                     }
                 }
+                timerWOSF.waitForAck();
+                timerWOSF.updateDelayOnAckReceived(command);
             }
             else if(strings[0].contains("leaderboard") && auctionThreadFlag) {
                 if(prev == null || prev.size() == 0) {
@@ -380,6 +411,8 @@ public class GroupFormation extends AppCompatActivity {
                             dataOutputStream = new DataOutputStream(s.getOutputStream());
                             dataOutputStream.writeUTF("leaderboard " + pos);
                             Log.i("flooding", "Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
+                            timerSF.waitForAck();
+                            timerSF.updateDelayOnAckReceived(command + "initial");
                             dataOutputStream.close();
                             s.close();
                         } catch (UnknownHostException e) {
@@ -401,6 +434,8 @@ public class GroupFormation extends AppCompatActivity {
                                 dataOutputStream = new DataOutputStream(s.getOutputStream());
                                 dataOutputStream.writeUTF("leaderboard " + (bidderLeaderboard.indexOf(sendip) + 1));
                                 Log.i("flooding", "sending " + "\"leaderboard " + pos + "\" to " + sendip);
+                                timerSF.waitForAck();
+                                timerSF.updateDelayOnAckReceived(command);
                                 dataOutputStream.close();
                                 s.close();
                             } catch (UnknownHostException e) {
@@ -412,6 +447,7 @@ public class GroupFormation extends AppCompatActivity {
                     }
                 }
             }
+
             return null;
         }
     }
