@@ -288,25 +288,13 @@ public class GroupJoin extends AppCompatActivity {
                         @Override
                         public void run() {
                             if(message.contains("result")) {
-                                new Handler().postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        currentItem++;
-                                        txtResult.setText("");
-                                        Log.i("module6", "gone");
-                                        updateItemInfo();
-                                    }
-                                }, 5000);
+                                currentItem++;
+                                updateItemInfo();
+                            }
 
-                                if(txtLeaderboardPosition.getText().toString().equals("Your Leaderboard Position: 1")) {
-                                    txtResult.setText("You won this bid");
-                                    Log.i("module6", "winner");
-                                } else {
-                                    Log.i("module6", "not a winner");
-                                }
                             }
                             else if(message.contains("update")) {
-                                Log.i("module4", "message: " + message + "status: received");
+
                                 String[] splitMessage = message.split(" ");
                                 if(currentItem == Integer.parseInt(splitMessage[1])) {
                                     txtHighest.setText("Highest Bid: " + splitMessage[2]);
@@ -324,12 +312,33 @@ public class GroupJoin extends AppCompatActivity {
                                 btnSend.setVisibility(View.GONE);
                                 txtBidAmount.setVisibility(View.GONE);
                                 textInputLayout.setVisibility(View.GONE);
-                                if(txtLeaderboardPosition.getText().toString().equals("Your Leaderboard Position: 1"))
-                                    txtResult.setText("You won this bid");
+
                             }
                         }
                     });
                 }
+                                           /* if(message.contains("result")) {
+                                new Handler().postDelayed(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        currentItem++;
+                                        txtResult.setText("");
+                                        Log.i("module6", "gone");
+                                        updateItemInfo();
+                                    }
+                                }, 5000);
+
+                                if(txtLeaderboardPosition.getText().toString().equals("Your Leaderboard Position: 1")) {
+                                    txtResult.setText("You won this bid");
+                                    Log.i("module6", "winner");
+                                } else {
+                                    Log.i("module6", "not a winner");
+                                }*/
+                
+                               /* Log.i("module4", "message: " + message + "status: received");*/
+                
+                            /*    if(txtLeaderboardPosition.getText().toString().equals("Your Leaderboard Position: 1"))
+                                    txtResult.setText("You won this bid");*/
             } catch (IOException e) {
                 e.printStackTrace();
             }
