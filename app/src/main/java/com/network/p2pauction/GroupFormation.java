@@ -308,7 +308,7 @@ public class GroupFormation extends AppCompatActivity {
         @Override
         protected String doInBackground(String... strings) {
             String command = strings[0];
-            if(strings.length == 1 && (strings[0].contains("result") || strings[0].contains("finish")) ) {
+            if(strings[0].contains("result") || strings[0].contains("finish")) {
 
                 if(strings[0].contains("finish")) {
                     Log.i("module6", "Delay without SF " + timerWOSF.getDelay());
@@ -324,7 +324,6 @@ public class GroupFormation extends AppCompatActivity {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                
                 if(selectiveFloodingToggle.contains("position")) {
                     timerWOSF.waitForAck();
                     timerWOSF.updateDelayOnAckReceived(command);
@@ -334,6 +333,7 @@ public class GroupFormation extends AppCompatActivity {
                     timerSF.updateDelayOnAckReceived(command);
                 }
             }
+                
             else if(strings[0].contains("update") && auctionThreadFlag) {
                 String split[] = strings[0].split("#");
                 playerBidHistory.add(split[1]);
@@ -361,7 +361,6 @@ public class GroupFormation extends AppCompatActivity {
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    
                     if(selectiveFloodingToggle.contains("position")) {
                         timerWOSF.waitForAck();
                         timerWOSF.updateDelayOnAckReceived(command);
@@ -373,6 +372,7 @@ public class GroupFormation extends AppCompatActivity {
                 }
 
             }
+           
             else if(strings[0].contains("position") && auctionThreadFlag) {
                 int pos = bidderLeaderboard.size() + 1;
                 for(String bidder : clientIpAddress) {
