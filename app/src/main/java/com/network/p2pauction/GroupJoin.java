@@ -171,24 +171,19 @@ public class GroupJoin extends AppCompatActivity {
         });
     }
     class BackgroundTask extends AsyncTask<String, Void, String> {
-        Socket s;
-        DataOutputStream dataOutputStream;
+        DataggramSocket s;
+        DatagramPacket dp;
         String message = myip;
+        InetAdress ip = InetAddress.getByName("255.255.255.255");
         @Override
         protected String doInBackground(String... strings) {
             Log.i("module2", "inside doinbg func. ip is " + ip);
             try {
-                s = new Socket(ip, 5825);
+                byte[] buf = message.getBytes();
                 Log.i("module2", "socket created");
-                dataOutputStream = new DataOutputStream(s.getOutputStream());
+                dp = new DatagramPacket(buf, buf.length, ip, 5825);
                 Log.i("module2", "got hold of output stream");
-                dataOutputStream.writeUTF(message);
-                Log.i("module2", "written utf message");
-                dataOutputStream.close();
-                Log.i("module2", "dos closed");
-                s.close();
-                Log.i("module2", "socket closed");
-                Log.i("module2", "message sent to " + ip);
+                s.send(dp);
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -198,18 +193,16 @@ public class GroupJoin extends AppCompatActivity {
         }
     }
     class BroadcastTask extends AsyncTask<String, Void, String> {
-        Socket s;
-        DataOutputStream dataOutputStream;
+        DatagramSocket s;
+        DatagramPacket dp;
+        InetAdress ip = InetAddress.getByName("255.255.255.255");
         @Override
         protected String doInBackground(String... strings) {
             try {
-                s = new Socket(ip, 5826);
-                dataOutputStream = new DataOutputStream(s.getOutputStream());
-                dataOutputStream.writeUTF(strings[0]);
+                byte[] buf = strings[0].getBytes();
+                dp = new DatagramPacket(buf, buf.length, ip, 5826);
+                s.send(dp);
                 Log.i("module4", "message: " + strings[0] + " status: sent");
-                dataOutputStream.close();
-                s.close();
-
             } catch (UnknownHostException e) {
                 e.printStackTrace();
             } catch (IOException e) {
@@ -219,20 +212,20 @@ public class GroupJoin extends AppCompatActivity {
         }
     }
     class MyServer implements Runnable {
-        ServerSocket ss;
-        Socket mySocket;
-        DataInputStream dataInputStream;
+        DatagramSocket ss;
+        DatagramPacket dp;
         BufferedReader bufferedReader;
         Handler handler = new Handler();
 
         @Override
         public void run() {
             try {
-                ss = new ServerSocket(5825);
+                ss = new DatagramSocket(5825);
                 while(true) {
-                    mySocket = ss.accept();
-                    dataInputStream = new DataInputStream(mySocket.getInputStream());
-                    String message = dataInputStream.readUTF();
+                    byte[] buf = new byte[1024];
+                    dp = new DatagramPacket(buf, buf.length);
+                    ss.receive(dp);
+                    String message = new String(buf);
                     Log.i("module2", "data read " + message);
                     handler.post(new Runnable() {
                         @Override
@@ -278,19 +271,19 @@ public class GroupJoin extends AppCompatActivity {
         }
     }
     class AuctionServer implements Runnable {
-        ServerSocket ss;
-        Socket mySocket;
-        DataInputStream dataInputStream;
+        DatagramSocket ss;
+        DatagramPacket dp;
         BufferedReader bufferedReader;
         Handler handler = new Handler();
         @Override
         public void run() {
             try {
-                ss = new ServerSocket(5826);
+                ss = new DatagramSocket(5826);
                 while(true) {
-                    mySocket = ss.accept();
-                    dataInputStream = new DataInputStream(mySocket.getInputStream());
-                    String message = dataInputStream.readUTF();
+                    byte[] buf = new byte[1024];
+                    dp = new DatagramPacket(buf, buf.length);
+                    ss.receive(dp);
+                    String message = new String(buf);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
