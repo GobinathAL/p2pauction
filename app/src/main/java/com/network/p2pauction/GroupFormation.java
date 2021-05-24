@@ -197,19 +197,19 @@ public class GroupFormation extends AppCompatActivity {
     }
     class MyServer implements Runnable {
 
-        ServerSocket ss;
-        Socket mySocket;
-        DataInputStream dataInputStream;
+        DatagramSocket ss;
+        DatagramPacket dp;
         BufferedReader bufferedReader;
         Handler handler = new Handler();
         @Override
         public void run() {
             try {
-                ss = new ServerSocket(5825);
+                ss = new DatagramSocket(5825);
                 while(true) {
-                    mySocket = ss.accept();
-                    dataInputStream = new DataInputStream(mySocket.getInputStream());
-                    message = dataInputStream.readUTF();
+                    byte[] buf = new byte[1024];
+                    dp = new DatagramPacket(buf, buf.length);
+                    ss.receive(dp);
+                    String message = new String(buf);
                     handler.post(new Runnable() {
                         @Override
                         public void run() {
@@ -228,21 +228,21 @@ public class GroupFormation extends AppCompatActivity {
         }
     }
     class BackgroundTask extends AsyncTask<String, Void, String> {
-        Socket s;
-        DataOutputStream dataOutputStream;
+        DatagramSocket s;
+        DatagramPacket dp;
         String message;
+        InetAddress ip = InetAddress.getByName("255.255.255.255");
         @Override
         protected String doInBackground(String... strings) {
             String command = strings[0];
             if(command.contains("config")) {
                 try {
-                    s = new Socket(command.substring(7), 5825);
-                    Log.i("module2", "socket established " + command.substring(7));
-                    dataOutputStream = new DataOutputStream(s.getOutputStream());
-                    dataOutputStream.writeUTF("config:" + AuctionCatalogue.AUCTION_NAME + "@" + AuctionCatalogue.AUCTION_CATALOGUE + "@" + AuctionCatalogue.AUCTION_DURATION);
-                    dataOutputStream.close();
+                    s = new DatagramSocket();
+                    String msg = "config:" + AuctionCatalogue.AUCTION_NAME + "@" + AuctionCatalogue.AUCTION_CATALOGUE + "@" + AuctionCatalogue.AUCTION_DURATION;
+                    byte[] buf = msg.getBytes();
+                    dp = new DatagramPacket(buf, buf.length, ip, 5825);
+                    s.send(dp);
                     Log.i("module2", command + "written to socket");
-                    s.close();
                 } catch (UnknownHostException e) {
                     e.printStackTrace();
                 } catch (IOException e) {
@@ -254,20 +254,17 @@ public class GroupFormation extends AppCompatActivity {
                     timerSF.startTimer();
                     timerWOSF.startTimer();
                 }
-                for(String sendip : clientIpAddress) {
-                    try {
-                        Socket s = new Socket(sendip, 5825);
-                        Log.i("module2", "socket established " + command + "to " + sendip);
-                        dataOutputStream = new DataOutputStream(s.getOutputStream());
-                        dataOutputStream.writeUTF(command);
-                        dataOutputStream.close();
-                        Log.i("module2", command + " written");
-                        s.close();
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    DatagramSocket s = new DatagramSocket();
+                    Log.i("module2", "socket established ");
+                    byte[] buf = command.getBytes();
+                    dp = new DatagramPacket(buf, buf.length, ip, 5825);
+                    s.send(dp);
+                    Log.i("module2", command + " written");
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
             return null;
@@ -275,20 +272,20 @@ public class GroupFormation extends AppCompatActivity {
     }
     class AuctionServer implements Runnable {
 
-        ServerSocket ss;
-        DataInputStream dataInputStream;
-        Socket mySocket;;
+        DatagramSocket ss;
+        DatagramPacket dp;
         BufferedReader bufferedReader;
         Handler handler = new Handler();
         String message;
         @Override
         public void run() {
             try {
-                ss = new ServerSocket(5826);
+                ss = new DatagramSocket(5826);
                 while (auctionThreadFlag) {
-                    mySocket = ss.accept();
-                    dataInputStream = new DataInputStream(mySocket.getInputStream());
-                    message = dataInputStream.readUTF();
+                    byte[] buf = new byte[1024];
+                    dp = new DatagramPacket(buf, buf.length);
+                    ss.receive(dp);
+                    String message = new String(buf);
                     Log.i("module5", "received " + message);
                     handler.post(new Runnable() {
                         @Override
@@ -304,9 +301,10 @@ public class GroupFormation extends AppCompatActivity {
         }
     }
     class BroadcastTask extends AsyncTask<String, Void, String> {
-        Socket s;
-        DataOutputStream dataOutputStream;
+        DatagramSocket s;
+        DatagramPacket dp;
         String message;
+        InetAddress ip = InetAddress.getByName("255.255.255.255");
         @Override
         protected String doInBackground(String... strings) {
             String command = strings[0];
@@ -316,19 +314,17 @@ public class GroupFormation extends AppCompatActivity {
                     Log.i("module6", "Delay without SF " + timerWOSF.getDelay());
                     Log.i("module6", "Delay with SF " + timerSF.getDelay());
                 }
-                for(String sendip : clientIpAddress) {
-                    try {
-                        Socket s = new Socket(sendip, 5826);
-                        dataOutputStream = new DataOutputStream(s.getOutputStream());
-                        dataOutputStream.writeUTF(strings[0]);
-                        dataOutputStream.close();
-                        s.close();
-                    } catch (UnknownHostException e) {
-                        e.printStackTrace();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                try {
+                    Socket s = new DatagramSocket();
+                    byte[] buf = strings[0].getBytes();
+                    dp = new DatagramPacket(buf, buf.length, ip, 5826);
+                    s.send(dp);
+                } catch (UnknownHostException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+                
                 if(selectiveFloodingToggle.contains("position")) {
                     timerWOSF.waitForAck();
                     timerWOSF.updateDelayOnAckReceived(command);
@@ -355,19 +351,17 @@ public class GroupFormation extends AppCompatActivity {
                             txtHighest.setText("Highest Bid: " + splitString[2]);
                         }
                     });
-                    for(String sendip : clientIpAddress) {
-                        try {
-                            Socket s = new Socket(sendip, 5826);
-                            dataOutputStream = new DataOutputStream(s.getOutputStream());
-                            dataOutputStream.writeUTF(split[0]);
-                            dataOutputStream.close();
-                            s.close();
-                        } catch (UnknownHostException e) {
-                            e.printStackTrace();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                    try {
+                        Socket s = new DatagramSocket();
+                        byte[] buf = split[0].getBytes();
+                        dp = new DatagramPacket(buf, buf.length, ip, 5826);
+                        s.send(dp);
+                    } catch (UnknownHostException e) {
+                        e.printStackTrace();
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
+                    
                     if(selectiveFloodingToggle.contains("position")) {
                         timerWOSF.waitForAck();
                         timerWOSF.updateDelayOnAckReceived(command);
@@ -380,17 +374,17 @@ public class GroupFormation extends AppCompatActivity {
 
             }
             else if(strings[0].contains("position") && auctionThreadFlag) {
-                for(String sendip : clientIpAddress) {
-                    int pos = bidderLeaderboard.size() + 1;
-                    if(bidderLeaderboard.contains(sendip))
-                        pos = bidderLeaderboard.indexOf(sendip) + 1;
+                int pos = bidderLeaderboard.size() + 1;
+                for(String bidder : clientIpAddress) {
+                    if(bidderLeaderboard.contains(bidder))
+                        pos = bidderLeaderboard.indexOf(bidder) + 1;
                     try {
-                        Socket s = new Socket(sendip, 5826);
-                        dataOutputStream = new DataOutputStream(s.getOutputStream());
-                        dataOutputStream.writeUTF("position " + pos + " " + sendip);
-                        Log.i("flooding", "Broadcasting \"" + "position " + pos + " " + sendip + "\" to all peers");
-                        dataOutputStream.close();
-                        s.close();
+                        Socket s = new DatagramSocket();
+                        String msg = "position " + pos + " " + bidder;
+                        byte[] buf = msg.getBytes();
+                        dp = new DatagramPacket(buf, buf.length, ip, 5826);
+                        s.send(dp);
+                        Log.i("flooding", "Broadcasting \"" + "position " + pos + " " + bidder + "\" to all peers");
                     } catch (UnknownHostException e) {
                         e.printStackTrace();
                     } catch (IOException e) {
@@ -402,14 +396,16 @@ public class GroupFormation extends AppCompatActivity {
             }
             else if(strings[0].contains("leaderboard") && auctionThreadFlag) {
                 if(prev == null || prev.size() == 0) {
-                    for(String sendip : clientIpAddress) {
+                    for(String bidder : clientIpAddress) {
                         int pos = bidderLeaderboard.size() + 1;
-                        if(bidderLeaderboard.contains(sendip))
-                            pos = bidderLeaderboard.indexOf(sendip) + 1;
+                        if(bidderLeaderboard.contains(bidder))
+                            pos = bidderLeaderboard.indexOf(bidder) + 1;
                         try {
-                            Socket s = new Socket(sendip, 5826);
-                            dataOutputStream = new DataOutputStream(s.getOutputStream());
-                            dataOutputStream.writeUTF("leaderboard " + pos);
+                            Socket s = new DatagramSocket();
+                            String msg = "leaderboard " + pos;
+                            byte[] buf = msg.getBytes();
+                            dp = new DatagramPacket(buf, buf.length, ip, 5826);
+                            s.send(dp);
                             Log.i("flooding", "Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
                             timerSF.waitForAck();
                             timerSF.updateDelayOnAckReceived(command + "initial");
@@ -423,21 +419,21 @@ public class GroupFormation extends AppCompatActivity {
                     }
                 }
                 else {
-                    for(String sendip : clientIpAddress) {
-                        if(prev.indexOf(sendip) != bidderLeaderboard.indexOf(sendip)) {
+                    for(String bidder : activeBidders) {
+                        if(prev.indexOf(bidder) != bidderLeaderboard.indexOf(bidder)) {
                             try {
                                 int pos = bidderLeaderboard.size() + 1;
-                                if(bidderLeaderboard.contains(sendip))
-                                    pos = bidderLeaderboard.indexOf(sendip) + 1;
-                                if(prev.contains(sendip) && prev.indexOf(sendip) == (pos - 1)) continue;
-                                Socket s = new Socket(sendip, 5826);
-                                dataOutputStream = new DataOutputStream(s.getOutputStream());
-                                dataOutputStream.writeUTF("leaderboard " + (bidderLeaderboard.indexOf(sendip) + 1));
-                                Log.i("flooding", "sending " + "\"leaderboard " + pos + "\" to " + sendip);
+                                if(bidderLeaderboard.contains(bidder))
+                                    pos = bidderLeaderboard.indexOf(bidder) + 1;
+                                if(prev.contains(bidder) && prev.indexOf(bidder) == (pos - 1)) continue;
+                                Socket s = new DatagramSocket();
+                                String msg = "leaderboard " + (bidderLeaderboard.indexOf(sendip) + 1);
+                                byte[] buf = msg.getBytes();
+                                dp = new DatagramPacket(buf, buf.length, ip, 5826);
+                                s.send(dp);
+                                Log.i("flooding", "sending " + "\"leaderboard " + pos + "\" to " + bidder);
                                 timerSF.waitForAck();
                                 timerSF.updateDelayOnAckReceived(command);
-                                dataOutputStream.close();
-                                s.close();
                             } catch (UnknownHostException e) {
                                 e.printStackTrace();
                             } catch (IOException e) {
