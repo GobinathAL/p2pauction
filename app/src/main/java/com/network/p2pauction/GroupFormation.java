@@ -409,8 +409,6 @@ public class GroupFormation extends AppCompatActivity {
                             Log.i("flooding", "Broadcasting \"" + "leaderboard " + pos + "\" to all peers");
                             timerSF.waitForAck();
                             timerSF.updateDelayOnAckReceived(command + "initial");
-                            dataOutputStream.close();
-                            s.close();
                         } catch (UnknownHostException e) {
                             e.printStackTrace();
                         } catch (IOException e) {
